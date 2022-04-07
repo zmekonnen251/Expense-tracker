@@ -1,32 +1,36 @@
+import { useState, useEffect } from 'react';
 import Expenses from './components/Expenses/Expenses';
 import NewExpense from './components/NewExpense/NewExpense';
 
 const App = () => {
-  const expenses = [
-    {
-      id: 'e1',
-      title: 'Toilet Paper',
-      amount: 94.12,
-      date: new Date(2020, 7, 14),
-    },
-    { id: 'e2', title: 'New TV', amount: 799.49, date: new Date(2021, 2, 12) },
-    {
-      id: 'e3',
-      title: 'Car Insurance',
-      amount: 294.67,
-      date: new Date(2021, 2, 28),
-    },
-    {
-      id: 'e4',
-      title: 'New Desk (Wooden)',
-      amount: 450,
-      date: new Date(2021, 5, 12),
-    },
-  ];
+  const getInitialData = () => {
+    const temp = localStorage.getItem('expenses');
+    const savedData = JSON.parse(temp);
+    return savedData || [];
+  };
+
+  const [expenses, setExpense] = useState(getInitialData());
 
   const addExpenseHandler = (expenseData) => {
-    console.log(expenseData);
+    setExpense((prevExpense) => {
+      return [expenseData, ...prevExpense];
+    });
   };
+
+  useEffect(() => {
+    // storing expense items
+    const temp = JSON.stringify(expenses);
+    localStorage.setItem('expenses', temp);
+  }, [expenses]);
+
+  useEffect(() => {
+    const temp = localStorage.getItem('expenses');
+    const loadedExpenses = JSON.parse(temp);
+
+    if (loadedExpenses) {
+      setExpense(loadedExpenses);
+    }
+  }, [setExpense]);
 
   return (
     <div>
